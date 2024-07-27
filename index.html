@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fitness Rewards Mini-App</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
 body, html {
@@ -14,11 +13,21 @@ font-family: Arial, sans-serif;
 height: 100%;
 background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
 color: #ffffff;
+overflow-x: hidden;
+}
+#background-canvas {
+position: fixed;
+top: 0;
+left: 0;
+z-index: -1;
 }
 .container {
-max-width: 100%;
+max-width: 1200px;
+margin: 0 auto;
 padding: 20px;
 box-sizing: border-box;
+position: relative;
+z-index: 1;
 }
 .header {
 text-align: center;
@@ -27,6 +36,7 @@ margin-bottom: 30px;
 .header h1 {
 font-size: 2.5em;
 color: #4CAF50;
+margin: 0;
 }
 .reward-circle {
 width: 300px;
@@ -118,6 +128,7 @@ flex: 1 1 100%;
 </style>
 </head>
 <body>
+<canvas id="background-canvas"></canvas>
 <div class="container">
 <header class="header">
 <h1>Fitness Rewards</h1>
@@ -212,21 +223,33 @@ sticker.style.transform = 'translate(-50%, -50%) scale(1)';
 // Initialize Three.js background animation
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer({ alpha: true });
+const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('background-canvas'), alpha: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
 
-const geometry = new THREE.TorusGeometry(10, 3, 16, 100);
+const geometry = new THREE.SphereGeometry(5, 32, 32);
 const material = new THREE.MeshBasicMaterial({ color: 0x4CAF50, wireframe: true });
-const torus = new THREE.Mesh(geometry, material);
-scene.add(torus);
+const sphere = new THREE.Mesh(geometry, material);
+scene.add(sphere);
 
-camera.position.z = 30;
+camera.position.z = 20;
+
+let heartbeatScale = 1;
+let heartbeatDirection = 0.01;
 
 function animate() {
 requestAnimationFrame(animate);
-torus.rotation.x += 0.01;
-torus.rotation.y += 0.01;
+
+// Pulsating effect
+heartbeatScale += heartbeatDirection;
+if (heartbeatScale > 1.1 || heartbeatScale < 0.9) {
+heartbeatDirection *= -1;
+}
+sphere.scale.set(heartbeatScale, heartbeatScale, heartbeatScale);
+
+// Rotate the sphere
+sphere.rotation.x += 0.01;
+sphere.rotation.y += 0.01;
+
 renderer.render(scene, camera);
 }
 animate();
