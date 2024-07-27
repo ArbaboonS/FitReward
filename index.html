@@ -22,7 +22,7 @@ left: 0;
 z-index: -1;
 }
 .container {
-max-width: 1200px;
+max-width: 800px;
 margin: 0 auto;
 padding: 20px;
 box-sizing: border-box;
@@ -110,6 +110,29 @@ top: 50%;
 left: 50%;
 transform: translate(-50%, -50%);
 }
+.slide {
+display: none;
+}
+.slide.active {
+display: block;
+}
+.welcome-message {
+text-align: center;
+margin-bottom: 30px;
+}
+.login-form {
+display: flex;
+flex-direction: column;
+align-items: center;
+}
+.login-form input {
+margin: 10px 0;
+padding: 10px;
+width: 100%;
+max-width: 300px;
+border-radius: 5px;
+border: none;
+}
 @media (max-width: 768px) {
 .header h1 {
 font-size: 2em;
@@ -134,6 +157,26 @@ flex: 1 1 100%;
 <h1>Fitness Rewards</h1>
 </header>
 
+<div id="welcomeSlide" class="slide active">
+<div class="welcome-message">
+<h2>Welcome to Fitness Rewards!</h2>
+<p>Track your physical activities and earn TON blockchain tokens as rewards. Stay fit and get rewarded!</p>
+</div>
+<div style="text-align: center;">
+<button class="button" onclick="showSlide('loginSlide')">Get Started</button>
+</div>
+</div>
+
+<div id="loginSlide" class="slide">
+<h2>Login</h2>
+<form class="login-form" onsubmit="event.preventDefault(); login();">
+<input type="text" id="username" placeholder="Username" required>
+<input type="password" id="password" placeholder="Password" required>
+<button class="button" type="submit">Login</button>
+</form>
+</div>
+
+<div id="activitySlide" class="slide">
 <div class="reward-circle">
 <svg width="300" height="150" viewBox="0 0 300 150">
 <path d="M10,75 A140,140 0 0,1 290,75" fill="none" stroke="#333333" stroke-width="20"/>
@@ -169,6 +212,7 @@ flex: 1 1 100%;
 <button class="button" onclick="syncActivity()">Sync Activity</button>
 </div>
 </div>
+</div>
 
 <script>
 let currentReward = 0;
@@ -176,6 +220,23 @@ let targetReward = 10;
 let currentSteps = 0;
 let currentDistance = 0;
 let currentCalories = 0;
+
+function showSlide(slideId) {
+document.querySelectorAll('.slide').forEach(slide => slide.classList.remove('active'));
+document.getElementById(slideId).classList.add('active');
+}
+
+function login() {
+// Simulating login process
+localStorage.setItem('loggedIn', 'true');
+showSlide('activitySlide');
+}
+
+function checkLoginStatus() {
+if (localStorage.getItem('loggedIn') === 'true') {
+showSlide('activitySlide');
+}
+}
 
 function animateValue(id, start, end, duration) {
 let startTimestamp = null;
@@ -260,6 +321,9 @@ camera.aspect = window.innerWidth / window.innerHeight;
 camera.updateProjectionMatrix();
 renderer.setSize(window.innerWidth, window.innerHeight);
 });
+
+// Check login status on page load
+window.addEventListener('load', checkLoginStatus);
 </script>
 </body>
 </html>
