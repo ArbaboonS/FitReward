@@ -3,323 +3,225 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FitReward - Earn TON for Your Fitness!</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/telegram-web-app/6.2.0/telegram-web-app.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+<title>Fitness Rewards Mini-App</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
-body {
-font-family: 'Roboto', sans-serif;
+body, html {
 margin: 0;
 padding: 0;
-background: linear-gradient(135deg, #2c2c2c, #1a1a1a);
+font-family: Arial, sans-serif;
+height: 100%;
+background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
 color: #ffffff;
 }
 .container {
-max-width: 800px;
-margin: 0 auto;
+max-width: 100%;
 padding: 20px;
+box-sizing: border-box;
 }
-h1 {
+.header {
 text-align: center;
-font-size: 2.5em;
 margin-bottom: 30px;
-text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+.header h1 {
+font-size: 2.5em;
 color: #4CAF50;
 }
-.activity-card {
-background-color: rgba(255, 255, 255, 0.1);
-border-radius: 15px;
-padding: 20px;
+.reward-circle {
+width: 300px;
+height: 150px;
+margin: 0 auto 30px;
+position: relative;
+}
+.reward-amount {
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+font-size: 2em;
+font-weight: bold;
+color: #4CAF50;
+}
+.progress-bar {
+background-color: #333333;
+border-radius: 10px;
+padding: 3px;
 margin-bottom: 20px;
-backdrop-filter: blur(10px);
+}
+.progress {
+background-color: #4CAF50;
+height: 20px;
+border-radius: 7px;
+width: 0;
+transition: width 1s ease-in-out;
+}
+.stats-container {
+display: flex;
+justify-content: space-around;
+flex-wrap: wrap;
+margin-bottom: 30px;
+}
+.stat-card {
+background-color: #333333;
+border-radius: 10px;
+padding: 20px;
+margin: 10px;
+flex: 1 1 200px;
+text-align: center;
 box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-transition: all 0.3s ease;
 }
-.activity-card:hover {
-transform: translateY(-5px);
-box-shadow: 0 6px 12px rgba(0,0,0,0.2);
-}
-.activity-title {
-font-size: 1.5em;
-margin-bottom: 10px;
+.stat-card h3 {
 color: #4CAF50;
-}
-.activity-description {
-font-size: 1em;
-margin-bottom: 15px;
-color: #ffffff;
+margin-top: 0;
 }
 .button {
-display: inline-block;
-padding: 10px 20px;
 background-color: #4CAF50;
 color: white;
+border: none;
+padding: 10px 20px;
+text-align: center;
 text-decoration: none;
-border-radius: 25px;
-font-weight: bold;
-text-transform: uppercase;
-transition: all 0.3s ease;
+display: inline-block;
+font-size: 16px;
+margin: 4px 2px;
+cursor: pointer;
+border-radius: 5px;
+transition: background-color 0.3s;
 }
 .button:hover {
 background-color: #45a049;
-transform: scale(1.05);
 }
-.stats {
-display: flex;
-justify-content: space-around;
-margin-top: 30px;
+#rewardSticker {
+width: 100px;
+height: 100px;
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+}
+@media (max-width: 768px) {
+.header h1 {
+font-size: 2em;
+}
+.reward-circle {
+width: 250px;
+height: 125px;
+}
+.reward-amount {
+font-size: 1.5em;
 }
 .stat-card {
-background-color: rgba(255, 255, 255, 0.1);
-border-radius: 10px;
-padding: 15px;
-text-align: center;
-flex: 1;
-margin: 0 10px;
+flex: 1 1 100%;
 }
-.stat-value {
-font-size: 2em;
-font-weight: bold;
-margin-bottom: 5px;
-color: #4CAF50;
-}
-.stat-label {
-font-size: 0.9em;
-text-transform: uppercase;
-color: #ffffff;
-}
-#activityChart {
-margin-top: 30px;
-background-color: rgba(255, 255, 255, 0.1);
-border-radius: 15px;
-padding: 20px;
-}
-#rewardAnimation {
-width: 100%;
-height: 200px;
-margin-top: 30px;
-}
-.menu {
-display: flex;
-justify-content: space-around;
-margin-bottom: 30px;
-}
-.menu-item {
-padding: 10px 20px;
-background-color: rgba(255, 255, 255, 0.1);
-border-radius: 25px;
-cursor: pointer;
-transition: all 0.3s ease;
-color: #ffffff;
-}
-.menu-item:hover {
-background-color: rgba(76, 175, 80, 0.3);
-}
-.challenge-section {
-background-color: rgba(255, 255, 255, 0.1);
-border-radius: 15px;
-padding: 20px;
-margin-top: 30px;
-}
-.challenge-title {
-font-size: 1.8em;
-margin-bottom: 15px;
-color: #4CAF50;
-}
-.challenge-description {
-font-size: 1.1em;
-margin-bottom: 20px;
-color: #ffffff;
-}
-.friend-list {
-display: flex;
-flex-wrap: wrap;
-gap: 10px;
-margin-bottom: 20px;
-}
-.friend-item {
-background-color: rgba(76, 175, 80, 0.2);
-border-radius: 20px;
-padding: 10px 15px;
-font-size: 0.9em;
-color: #ffffff;
-}
-.progress-bar {
-width: 100%;
-background-color: rgba(255, 255, 255, 0.1);
-border-radius: 10px;
-margin-bottom: 15px;
-overflow: hidden;
-}
-.progress {
-height: 20px;
-background-color: #4CAF50;
-border-radius: 10px;
-transition: width 0.5s ease-in-out;
-}
-.progress-label {
-display: flex;
-justify-content: space-between;
-margin-bottom: 5px;
-color: #ffffff;
 }
 </style>
 </head>
 <body>
 <div class="container">
-<h1>FitReward</h1>
+<header class="header">
+<h1>Fitness Rewards</h1>
+</header>
 
-<div class="menu">
-<div class="menu-item">Dashboard</div>
-<div class="menu-item">Activities</div>
-<div class="menu-item">Challenges</div>
-<div class="menu-item">Rewards</div>
+<div class="reward-circle">
+<svg width="300" height="150" viewBox="0 0 300 150">
+<path d="M10,75 A140,140 0 0,1 290,75" fill="none" stroke="#333333" stroke-width="20"/>
+<path id="rewardArc" d="M10,75 A140,140 0 0,1 290,75" fill="none" stroke="#4CAF50" stroke-width="20" stroke-dasharray="440" stroke-dashoffset="440"/>
+</svg>
+<div class="reward-amount">0 TON</div>
+<svg id="rewardSticker" viewBox="0 0 100 100">
+<circle cx="50" cy="50" r="45" fill="#4CAF50" />
+<text x="50" y="60" font-size="40" text-anchor="middle" fill="white">🏃</text>
+</svg>
 </div>
 
-<div class="activity-card">
-<div class="activity-title">Today's Goal</div>
-<div class="activity-description">Walk 10,000 steps and earn 5 TON tokens!</div>
 <div class="progress-bar">
-<div class="progress-label">
-<span>Progress</span>
-<span>75%</span>
-</div>
-<div class="progress" style="width: 75%;"></div>
-</div>
-<a href="#" class="button">Start Walking</a>
+<div id="activityProgress" class="progress"></div>
 </div>
 
-<div class="activity-card">
-<div class="activity-title">Weekly Challenge</div>
-<div class="activity-description">Burn 5,000 calories this week and get a 20% token bonus!</div>
-<div class="progress-bar">
-<div class="progress-label">
-<span>Progress</span>
-<span>60%</span>
-</div>
-<div class="progress" style="width: 60%;"></div>
-</div>
-<a href="#" class="button">Join Challenge</a>
-</div>
-
-<div class="stats">
+<div class="stats-container">
 <div class="stat-card">
-<div class="stat-value">7,532</div>
-<div class="stat-label">Steps Today</div>
-<div class="progress-bar">
-<div class="progress" style="width: 75%;"></div>
-</div>
+<h3>Steps</h3>
+<p id="stepsCount">0</p>
 </div>
 <div class="stat-card">
-<div class="stat-value">3.2</div>
-<div class="stat-label">Km Cycled</div>
-<div class="progress-bar">
-<div class="progress" style="width: 40%;"></div>
-</div>
+<h3>Distance</h3>
+<p id="distance">0 km</p>
 </div>
 <div class="stat-card">
-<div class="stat-value">450</div>
-<div class="stat-label">Calories Burned</div>
-<div class="progress-bar">
-<div class="progress" style="width: 60%;"></div>
-</div>
+<h3>Calories</h3>
+<p id="calories">0 kcal</p>
 </div>
 </div>
 
-<canvas id="activityChart"></canvas>
-
-<div id="rewardAnimation"></div>
-
-<div class="challenge-section">
-<div class="challenge-title">Group Challenge: Marathon Prep</div>
-<div class="challenge-description">Team up with friends and prepare for the upcoming city marathon. Increase your token mining rate by 50%!</div>
-<div class="progress-bar">
-<div class="progress-label">
-<span>Group Progress</span>
-<span>45%</span>
-</div>
-<div class="progress" style="width: 45%;"></div>
-</div>
-<div class="friend-list">
-<div class="friend-item">Alice</div>
-<div class="friend-item">Bob</div>
-<div class="friend-item">Charlie</div>
-<div class="friend-item">+ Invite More</div>
-</div>
-<a href="#" class="button">Start Group Challenge</a>
+<div style="text-align: center;">
+<button class="button" onclick="syncActivity()">Sync Activity</button>
 </div>
 </div>
 
 <script>
-// Initialize Telegram WebApp
-const webApp = window.Telegram.WebApp;
-webApp.ready();
+let currentReward = 0;
+let targetReward = 10;
+let currentSteps = 0;
+let currentDistance = 0;
+let currentCalories = 0;
 
-// Activity Chart
-const ctx = document.getElementById('activityChart').getContext('2d');
-new Chart(ctx, {
-type: 'line',
-data: {
-labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-datasets: [{
-label: 'Daily Activity (minutes)',
-data: [30, 45, 60, 35, 50, 70, 55],
-borderColor: '#4CAF50',
-backgroundColor: 'rgba(76, 175, 80, 0.1)',
-tension: 0.4
-}]
-},
-options: {
-responsive: true,
-plugins: {
-legend: {
-position: 'top',
-labels: {
-color: '#ffffff'
+function animateValue(id, start, end, duration) {
+let startTimestamp = null;
+const step = (timestamp) => {
+if (!startTimestamp) startTimestamp = timestamp;
+const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+const value = Math.floor(progress * (end - start) + start);
+document.getElementById(id).textContent = value;
+if (progress < 1) {
+window.requestAnimationFrame(step);
 }
-},
-title: {
-display: true,
-text: 'Weekly Activity Overview',
-color: '#ffffff'
+};
+window.requestAnimationFrame(step);
 }
-},
-scales: {
-y: {
-beginAtZero: true,
-ticks: {
-color: '#ffffff'
-},
-grid: {
-color: 'rgba(255, 255, 255, 0.1)'
-}
-},
-x: {
-ticks: {
-color: '#ffffff'
-},
-grid: {
-color: 'rgba(255, 255, 255, 0.1)'
-}
-}
-}
-}
-});
 
-// 3D Reward Animation
+function updateRewardCircle(percentage) {
+const circumference = 2 * Math.PI * 140;
+const offset = circumference - (percentage / 100) * circumference;
+document.getElementById('rewardArc').style.strokeDashoffset = offset;
+}
+
+function syncActivity() {
+currentReward = Math.min(currentReward + Math.random() * 2, targetReward);
+currentSteps += Math.floor(Math.random() * 1000);
+currentDistance += Math.random() * 0.5;
+currentCalories += Math.floor(Math.random() * 50);
+
+animateValue('stepsCount', parseInt(document.getElementById('stepsCount').textContent), currentSteps, 1000);
+document.getElementById('distance').textContent = currentDistance.toFixed(2) + ' km';
+animateValue('calories', parseInt(document.getElementById('calories').textContent), currentCalories, 1000);
+
+const percentage = (currentReward / targetReward) * 100;
+document.getElementById('activityProgress').style.width = percentage + '%';
+updateRewardCircle(percentage);
+document.querySelector('.reward-amount').textContent = currentReward.toFixed(2) + ' TON';
+
+// Animate the sticker
+const sticker = document.getElementById('rewardSticker');
+sticker.style.transform = 'translate(-50%, -50%) scale(1.2)';
+setTimeout(() => {
+sticker.style.transform = 'translate(-50%, -50%) scale(1)';
+}, 200);
+}
+
+// Initialize Three.js background animation
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer({ alpha: true });
-renderer.setSize(400, 200);
-document.getElementById('rewardAnimation').appendChild(renderer.domElement);
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
 
-const geometry = new THREE.TorusGeometry(1, 0.4, 16, 100);
+const geometry = new THREE.TorusGeometry(10, 3, 16, 100);
 const material = new THREE.MeshBasicMaterial({ color: 0x4CAF50, wireframe: true });
 const torus = new THREE.Mesh(geometry, material);
 scene.add(torus);
 
-camera.position.z = 5;
+camera.position.z = 30;
 
 function animate() {
 requestAnimationFrame(animate);
@@ -328,6 +230,13 @@ torus.rotation.y += 0.01;
 renderer.render(scene, camera);
 }
 animate();
+
+// Make Three.js canvas responsive
+window.addEventListener('resize', () => {
+camera.aspect = window.innerWidth / window.innerHeight;
+camera.updateProjectionMatrix();
+renderer.setSize(window.innerWidth, window.innerHeight);
+});
 </script>
 </body>
 </html>
